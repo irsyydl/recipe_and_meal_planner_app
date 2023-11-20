@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "161234470305",
+    "project_id": "recipe-and-meal-planner-app",
+    "storage_bucket": "recipe-and-meal-planner-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161234470305:android:1161daa9fd64195d2637e0",
+        "android_client_info": {
+          "package_name": "com.example.recipe_and_meal_planner_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsMZgzVaPwV5pe0KyK6kv331UJyJz9eSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
