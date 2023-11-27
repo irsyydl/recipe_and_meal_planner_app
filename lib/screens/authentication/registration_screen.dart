@@ -10,6 +10,7 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _displayNameController= TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TextField(
+              controller: _displayNameController,
+              decoration: InputDecoration(labelText: 'Username'),
+            ),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email'),
@@ -48,12 +53,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void _register() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
+    String displayName = _displayNameController.text.trim();
 
-    User? user =
-        await AuthService().registerWithEmailAndPassword(email, password);
+    User? user = await AuthService()
+        .registerWithEmailAndPassword(email, password, displayName);
 
     if (user != null) {
-      Navigator.pushReplacementNamed(context, '/login');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration successful'),
+        ),
+      );
+      Navigator.pushNamed(context, '/login');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

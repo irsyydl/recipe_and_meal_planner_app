@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_and_meal_planner_app/models/recipe.dart';
 import 'package:recipe_and_meal_planner_app/screens/recipe_details_screen.dart';
-import 'package:recipe_and_meal_planner_app/services/auth_service.dart';
+// import 'package:recipe_and_meal_planner_app/services/auth_service.dart';
 import 'package:recipe_and_meal_planner_app/services/recipe_service.dart';
 import 'package:recipe_and_meal_planner_app/widgets/recipe_card.dart';
 
 class HomeScreen extends StatelessWidget {
   final RecipeService _recipeService = RecipeService();
-  final AuthService _authService = AuthService();
+  // final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +16,9 @@ class HomeScreen extends StatelessWidget {
         title: Text('Recipes'),
         actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () async {
-              await _logout(context);
+            icon: Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
             },
           ),
           IconButton(
@@ -78,8 +78,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _logout(BuildContext context) async {
-    await _authService.signOut();
-    Navigator.pushReplacementNamed(context, '/login');
-  }
+  // Future<void> _logout(BuildContext context) async {
+  //   await _authService.signOut();
+  //   Navigator.pushReplacementNamed(context, '/login');
+  // }
 }
