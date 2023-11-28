@@ -31,47 +31,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
           appBar: AppBar(
             title: const Text('Profile'),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FutureBuilder<String>(
-                  future: _storage
-                      .ref('profile_pictures/default_pfp.png')
-                      .getDownloadURL(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FutureBuilder<String>(
+                    future: _storage
+                        .ref('profile_pictures/default_pfp.png')
+                        .getDownloadURL(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
                       } else {
-                        return Image.network(user?.photoURL ??
-                            snapshot
-                                .data!);
+                        if (snapshot.hasError)
+                          return Text('Error: ${snapshot.error}');
+                        else
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage:
+                                NetworkImage(user?.photoURL ?? snapshot.data!),
+                          );
                       }
-                    }
-                  },
-                ),
-                Text('Username: ${user?.displayName ?? 'N/A'}'),
-                Text('Email: ${user?.email ?? 'N/A'}'),
-                ElevatedButton(
-                  onPressed: _changeDisplayName,
-                  child: const Text('Change Username'),
-                ),
-                ElevatedButton(
-                  onPressed: _updateProfilePicture,
-                  child: const Text('Change Profile Picture'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _logout(context);
-                  },
-                  child: const Text('Logout'),
-                ),
-              ],
+                    },
+                  ),
+                  Text('Username: ${user?.displayName ?? 'N/A'}'),
+                  Text('Email: ${user?.email ?? 'N/A'}'),
+                  ElevatedButton(
+                    onPressed: _changeDisplayName,
+                    child: const Text('Change Username'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _updateProfilePicture,
+                    child: const Text('Change Profile Picture'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await _logout(context);
+                    },
+                    child: const Text('Logout'),
+                  ),
+                ],
+              ),
             ),
           ),
         );
