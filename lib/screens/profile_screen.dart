@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipe_and_meal_planner_app/services/auth_service.dart';
@@ -19,7 +20,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _displayNameController = TextEditingController();
   Stream<User?> get userChanges => _auth.userChanges();
   final _picker = ImagePicker();
-  final _storage = FirebaseStorage.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -37,27 +37,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  FutureBuilder<String>(
-                    future: _storage
-                        .ref('profile_pictures/default_pfp.png')
-                        .getDownloadURL(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user?.uid)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       } else {
                         if (snapshot.hasError)
                           return Text('Error: ${snapshot.error}');
-                        else
+                        else {
+                          String profilePictureUrl =
+                              snapshot.data?['profilePictureUrl'] ?? '';
                           return CircleAvatar(
                             radius: 50,
-                            backgroundImage:
-                                NetworkImage(user?.photoURL ?? snapshot.data!),
+                            backgroundImage: NetworkImage(profilePictureUrl),
                           );
+                        }
                       }
                     },
                   ),
-                  Text('Username: ${user?.displayName ?? 'N/A'}'),
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user?.uid)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else {
+                        if (snapshot.hasError)
+                          return Text('Error: ${snapshot.error}');
+                        else {
+                          String username = snapshot.data?['username'] ?? 'N/A';
+                          return Text('Username: $username');
+                        }
+                      }
+                    },
+                  ),
                   Text('Email: ${user?.email ?? 'N/A'}'),
                   ElevatedButton(
                     onPressed: _changeDisplayName,
@@ -106,6 +127,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () async {
                 await _authService
                     .updateDisplayName(_displayNameController.text);
+                User? user = _auth.currentUser;
+                if (user != null) {
+                  await user.updateDisplayName(_displayNameController.text);
+                }
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: const Text('Username updated'),
@@ -128,27 +153,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       try {
         // Upload the image to Firebase Storage with the user's ID as the filename
-        final user = _auth.currentUser;
-        final ref = _storage.ref('profile_pictures/${user?.uid}');
-        final uploadTask = ref.putFile(imageFile);
+        final user = FirebaseAuth.instance.currentUser;
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_pictures/${user?.uid}');
+        final uploadTask = storageRef.putFile(imageFile);
 
-        // Once the upload is complete, update the user's photoURL with the download URL
-        final snapshot = await uploadTask.whenComplete(() => null);
-        final downloadUrl = await snapshot.ref.getDownloadURL();
+        // Wait for the upload to complete
+        final taskSnapshot = await uploadTask.whenComplete(() {});
+        final profilePictureUrl = await taskSnapshot.ref.getDownloadURL();
 
-        await user?.updatePhotoURL(downloadUrl);
+        // Update the profilePictureUrl field in the user's document in Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user?.uid)
+            .update({
+          'profilePictureUrl': profilePictureUrl,
+        });
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Profile picture updated'),
+            content: const Text('Profile picture updated'),
           ),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update profile picture'),
-          ),
-        );
+        print('Error updating profile picture: $e');
       }
     }
   }

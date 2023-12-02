@@ -73,10 +73,31 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                       final comment =
                           Comment.fromFirestore(snapshot.data!.docs[index]);
 
-                      return ListTile(
-                        leading: Image.network(comment.userProfilePictureUrl),
-                        title: Text(comment.username),
-                        subtitle: Text(comment.text),
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(comment.userId)
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return CircularProgressIndicator();
+                          }
+
+                          final userDoc = snapshot.data;
+
+                          if (userDoc == null || !userDoc.exists) {
+                            return Text('User not found');
+                          }
+
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(userDoc['profilePictureUrl']),
+                            ),
+                            title: Text(userDoc['username']),
+                            subtitle: Text(comment.text),
+                          );
+                        },
                       );
                     },
                   );
@@ -94,8 +115,6 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     if (user != null) {
       final comment = Comment(
         userId: user.uid,
-        username: user.displayName ?? '',
-        userProfilePictureUrl: user.photoURL ?? '',
         text: _commentController.text,
         timestamp: DateTime.now(),
       );

@@ -64,7 +64,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           content: Text('Registration successful'),
         ),
       );
-      Navigator.pushNamed(context, '/login');
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

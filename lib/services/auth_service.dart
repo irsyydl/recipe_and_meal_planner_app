@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -26,8 +28,21 @@ class AuthService {
         email: email,
         password: password,
       );
-      await updateDisplayName(displayName);
-      return result.user;
+      User? user = result.user;
+
+      if (user != null) {
+        final defaultProfilePictureRef = FirebaseStorage.instance.ref().child('profile_pictures/default_pfp.png');
+        final defaultProfilePictureUrl = await defaultProfilePictureRef.getDownloadURL();
+
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'username': displayName,
+          'profilePictureUrl': defaultProfilePictureUrl,
+        });
+
+        await updateDisplayName(displayName);
+      }
+
+      return user;
     } catch (e) {
       print('Error registering: $e');
       return null;
@@ -48,12 +63,13 @@ class AuthService {
     }
   }
 
-  Future<void> updateDisplayName(String displayName) async {
-    User? user = FirebaseAuth.instance.currentUser;
+  Future<void> updateDisplayName(String newUsername) async {
+    final user = _auth.currentUser;
 
     if (user != null) {
-      await user.updateDisplayName(displayName);
-      await user.reload();
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'username': newUsername,
+      });
     }
   }
 }
