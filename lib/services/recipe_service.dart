@@ -9,20 +9,28 @@ class RecipeService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final String _collectionPath = 'recipes';
 
-  Future<List<Recipe>> getRecipes() async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await _firestore.collection(_collectionPath).get();
-
-      List<Recipe> recipes = querySnapshot.docs
+  Stream<List<Recipe>> getRecipes() {
+    return _firestore.collection(_collectionPath).snapshots().map((snapshot) {
+      return snapshot.docs
           .map((doc) => Recipe.fromFirestore(doc))
-          .where((recipe) => recipe.id.isNotEmpty) // Filter out empty IDs
+          .where((recipe) => recipe.id.isNotEmpty)
           .toList();
+    });
+  }
 
-      return recipes;
+  Future<String> getRecipeTitle(String recipeId) async {
+    try {
+      DocumentSnapshot recipeDoc =
+          await _firestore.collection('recipes').doc(recipeId).get();
+
+      if (recipeDoc.exists) {
+        return recipeDoc.get('title') ?? 'Unknown Recipe';
+      } else {
+        return 'Unknown Recipe';
+      }
     } catch (e) {
-      print('Error fetching recipes: $e');
-      return [];
+      print('Error fetching recipe title: $e');
+      return 'Unknown Recipe';
     }
   }
 
@@ -38,8 +46,7 @@ class RecipeService {
 
       if (recipeDoc.exists) {
         return Recipe.fromFirestore(recipeDoc);
-      } else {
-      }
+      } else {}
     } catch (e) {
       print('Error fetching recipe by ID: $e');
       return null;
