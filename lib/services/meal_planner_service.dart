@@ -11,20 +11,17 @@ class MealPlannerService {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        String formattedDate =
-            "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
+        String formattedDate = "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
 
-        Map<String, List<Map<String, dynamic>>> mealPlanner =
-            await getMealPlanner();
-
-        mealPlanner.putIfAbsent(formattedDate, () => []);
-        mealPlanner[formattedDate]!.add({'recipeId': recipeId});
         await _firestore
             .collection('users')
             .doc(user.uid)
             .collection('mealPlanner')
-            .doc('planner')
-            .set(mealPlanner);
+            .doc(formattedDate + recipeId)
+            .set({
+              'date': formattedDate,
+              'recipeId': recipeId,
+            });
 
         await _shoppingListService.addIngredientsToShoppingList(recipeId);
       }
@@ -37,29 +34,24 @@ class MealPlannerService {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        DocumentSnapshot mealPlannerDoc = await _firestore
+        QuerySnapshot mealPlannerSnapshot = await _firestore
             .collection('users')
             .doc(user.uid)
             .collection('mealPlanner')
-            .doc('planner')
             .get();
 
-        if (mealPlannerDoc.exists) {
-          Map<String, dynamic> rawMealPlanner =
-              mealPlannerDoc.data() as Map<String, dynamic>;
-          Map<String, List<Map<String, dynamic>>> mealPlanner = {};
-
-          rawMealPlanner.forEach((key, value) {
-            if (value is List) {
-              mealPlanner[key] = List<Map<String, dynamic>>.from(
-                  value.map((entry) => Map<String, dynamic>.from(entry)));
-            }
-          });
-
-          return mealPlanner;
-        } else {
-          return {};
+        Map<String, List<Map<String, dynamic>>> mealPlanner = {};
+        for (var doc in mealPlannerSnapshot.docs) {
+          Map<String, dynamic> meal = doc.data() as Map<String, dynamic>;
+          String date = meal['date'];
+          if (mealPlanner[date] == null) {
+            mealPlanner[date] = [meal];
+          } else {
+            mealPlanner[date]!.add(meal);
+          }
         }
+
+        return mealPlanner;
       }
       return {};
     } catch (e) {
@@ -68,45 +60,19 @@ class MealPlannerService {
     }
   }
 
-  Future<List<String>> getMealPlannerRecipeIds(String recipeId) async {
+  Future<void> removeFromMealPlanner(String recipeId, String date) async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        Map<String, List<Map<String, dynamic>>> mealPlanner =
-            await getMealPlanner();
-
-        List<String> recipeIds = [];
-        mealPlanner.forEach((date, recipes) {
-          recipes.forEach((recipe) {
-            String recipeId = recipe['recipeId'];
-            if (recipeId.isNotEmpty && !recipeIds.contains(recipeId)) {
-              recipeIds.add(recipeId);
-            }
-          });
-        });
-
-        return recipeIds;
-      }
-      return [];
-    } catch (e) {
-      print('Error fetching meal planner recipe IDs: $e');
-      return [];
-    }
-  }
-
-  Future<String> getRecipeTitle(String recipeId) async {
-    try {
-      DocumentSnapshot recipeDoc =
-          await _firestore.collection('recipes').doc(recipeId).get();
-
-      if (recipeDoc.exists) {
-        return recipeDoc.get('title') ?? 'Unknown Recipe';
-      } else {
-        return 'Unknown Recipe';
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('mealPlanner')
+            .doc(date + recipeId)
+            .delete();
       }
     } catch (e) {
-      print('Error fetching recipe title: $e');
-      return 'Unknown Recipe';
+      print('Error removing from meal planner: $e');
     }
   }
 }
