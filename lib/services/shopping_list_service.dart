@@ -7,23 +7,7 @@ class ShoppingListService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthService _authService = AuthService();
 
-  Future<void> addToShoppingList(String recipeId) async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        await _firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('shoppingList')
-            .doc(recipeId)
-            .set({});
-      }
-    } catch (e) {
-      print('Error adding to shopping list: $e');
-    }
-  }
-
-  Future<List<String>> getShoppingList() async {
+  Future<List<Map<String, String>>> getShoppingList() async {
     try {
       String? userId = await _authService.getCurrentUserId();
       if (userId != null) {
@@ -36,17 +20,15 @@ class ShoppingListService {
         QuerySnapshot<Map<String, dynamic>> querySnapshot =
             await shoppingListCollection.get();
 
-        List<String> shoppingList = [];
+        List<Map<String, String>> shoppingList = [];
 
         for (QueryDocumentSnapshot<Map<String, dynamic>> doc
             in querySnapshot.docs) {
-          // Check if the document contains an 'ingredients' array
-          if (doc.data().containsKey('ingredients')) {
-            List<dynamic> ingredients = doc['ingredients'];
+          if (doc.data().containsKey('ingredient')) {
+            String ingredient = doc['ingredient'];
+            String recipeId = doc.id.split(ingredient)[0];
 
-            // Add each ingredient to the shopping list
-            shoppingList
-                .addAll(ingredients.map((ingredient) => ingredient.toString()));
+            shoppingList.add({'recipeId': recipeId, 'ingredient': ingredient});
           }
         }
 
@@ -70,12 +52,14 @@ class ShoppingListService {
         List<String> ingredients =
             List<String>.from(recipeDoc.get('ingredients') ?? []);
 
-        await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
-            .collection('shoppingList')
-            .doc(recipeId)
-            .set({'ingredients': ingredients});
+        for (String ingredient in ingredients) {
+          await _firestore
+              .collection('users')
+              .doc(_auth.currentUser!.uid)
+              .collection('shoppingList')
+              .doc(recipeId + ingredient)
+              .set({'ingredient': ingredient});
+        }
 
         print('Ingredients added to shopping list successfully.');
       } else {
@@ -83,6 +67,22 @@ class ShoppingListService {
       }
     } catch (e) {
       print('Error adding ingredients to shopping list: $e');
+    }
+  }
+
+  Future<void> removeIngredientFromShoppingList(
+      String recipeId, String ingredient) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('shoppingList')
+          .doc(recipeId + ingredient)
+          .delete();
+
+      print('Ingredient removed from shopping list successfully.');
+    } catch (e) {
+      print('Error removing ingredient from shopping list: $e');
     }
   }
 }
