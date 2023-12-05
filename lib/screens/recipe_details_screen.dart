@@ -66,12 +66,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     return CircularProgressIndicator();
                   }
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data?.docs.length,
-                    itemBuilder: (context, index) {
-                      final comment =
-                          Comment.fromFirestore(snapshot.data!.docs[index]);
+                  return Column(
+                    children: snapshot.data!.docs.map((doc) {
+                      final comment = Comment.fromFirestore(doc);
 
                       return FutureBuilder<DocumentSnapshot>(
                         future: FirebaseFirestore.instance
@@ -99,7 +96,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                           );
                         },
                       );
-                    },
+                    }).toList(),
                   );
                 },
               ),
