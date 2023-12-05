@@ -36,8 +36,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/shoppingList': (context) => ShoppingListScreen(),
         '/mealPlanner': (context) => MealPlannerScreen(),
-        '/uploadRecipe': (context) => RecipeUploadScreen(),
-        '/profile': (context) => ProfileScreen(),
+        '/uploadRecipe': (context) => const RecipeUploadScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }
