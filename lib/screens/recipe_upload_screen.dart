@@ -46,34 +46,67 @@ class _RecipeUploadScreenState extends State<RecipeUploadScreen> {
                       : Icon(Icons.add_a_photo, color: Colors.grey[800]),
                 ),
               ),
+              SizedBox(height: 10),
               TextFormField(
                 controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  ),
+                ),
               ),
+              SizedBox(height: 10),
               TextFormField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  ),
+                ),
               ),
+              SizedBox(height: 10),
               TextFormField(
                 controller: ingredientsController,
-                decoration: const InputDecoration(labelText: 'Ingredients'),
+                decoration: InputDecoration(
+                  labelText: 'Ingredients',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  ),
+                ),
               ),
+              SizedBox(height: 10),
               TextFormField(
                 controller: instructionsController,
-                decoration: const InputDecoration(labelText: 'Instructions'),
+                decoration: InputDecoration(
+                  labelText: 'Instructions',
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () async {
                   String title = titleController.text;
                   String description = descriptionController.text;
-                  List<String> ingredients = ingredientsController.text.split(',');
-                  List<String> instructions = instructionsController.text.split(',');
+                  List<String> ingredients =
+                      ingredientsController.text.split(',');
+                  List<String> instructions =
+                      instructionsController.text.split(',');
 
-                  if (title.isEmpty || description.isEmpty || ingredientsController.text.isEmpty || instructionsController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please fill all the fields before uploading the recipe.'))
-                    );
+                  if (title.isEmpty ||
+                      description.isEmpty ||
+                      ingredientsController.text.isEmpty ||
+                      instructionsController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Please fill all the fields before uploading the recipe.')));
                     return;
                   }
 
