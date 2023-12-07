@@ -24,82 +24,140 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: AuthService().userChanges,
+      stream: userChanges,
       builder: (context, snapshot) {
         User? user = snapshot.data;
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Profile'),
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(user?.uid)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else {
-                        if (snapshot.hasError)
-                          return Text('Error: ${snapshot.error}');
-                        else {
-                          String profilePictureUrl =
-                              snapshot.data?['profilePictureUrl'] ?? '';
-                          return CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(profilePictureUrl),
-                          );
+          body: Column(children: [
+            AppBar(
+              title: Text("Profile"),
+              backgroundColor: Colors.transparent,
+            ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(
+                  children: [
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user?.uid)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else {
+                          if (snapshot.hasError)
+                            return Text('Error: ${snapshot.error}');
+                          else {
+                            String profilePictureUrl =
+                                snapshot.data?['profilePictureUrl'] ?? '';
+                            return CircleAvatar(
+                              radius: 60,
+                              backgroundImage: NetworkImage(profilePictureUrl),
+                              backgroundColor: Colors.white,
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
-                  StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(user?.uid)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else {
-                        if (snapshot.hasError)
-                          return Text('Error: ${snapshot.error}');
-                        else {
-                          String username = snapshot.data?['username'] ?? 'N/A';
-                          return Text('Username: $username');
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user?.uid)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else {
+                          if (snapshot.hasError)
+                            return Text('Error: ${snapshot.error}');
+                          else {
+                            String username =
+                                snapshot.data?['username'] ?? 'N/A';
+                            String userEmail = user?.email ?? 'N/A';
+                            return Column(
+                              children: [
+                                Text(
+                                  "Nama Pengguna: $username",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "Email: $userEmail",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
-                  Text('Email: ${user?.email ?? 'N/A'}'),
-                  ElevatedButton(
-                    onPressed: _changeDisplayName,
-                    child: const Text('Change Username'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _updateProfilePicture,
-                    child: const Text('Change Profile Picture'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await _logout(context);
-                    },
-                    child: const Text('Logout'),
-                  ),
-                ],
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    _buildProfileButton(context, "Change Username", Icons.edit),
+                    _buildProfileButton(
+                        context, "Change Profile Picture", Icons.camera_alt),
+                    _buildProfileButton(
+                        context, "Logout", Icons.logout_outlined),
+                  ],
+                ),
               ),
             ),
-          ),
+          ]),
         );
       },
+    );
+  }
+
+  Widget _buildProfileButton(
+      BuildContext context, String label, IconData icon) {
+    return InkWell(
+      onTap: () {
+        if (label == "Change Username") {
+          _changeDisplayName();
+        } else if (label == "Change Profile Picture") {
+          _updateProfilePicture();
+        } else if (label == "Logout") {
+          _logout(context);
+        }
+      },
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 50), // Mengatur jarak dari tepi kiri
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(color: Colors.transparent),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.all(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(
+                icon,
+                color: Colors.black,
+              ),
+              SizedBox(width: 10),
+              Text(
+                label,
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
