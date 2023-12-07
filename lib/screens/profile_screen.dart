@@ -84,9 +84,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             return Column(
                               children: [
                                 Text(
-                                  "Nama Pengguna: $username",
+                                  "Username: $username",
                                   style: TextStyle(
-                                    color: Colors.black,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -94,7 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Text(
                                   "Email: $userEmail",
                                   style: TextStyle(
-                                    color: Colors.black,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -147,12 +145,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Icon(
                 icon,
-                color: Colors.black,
               ),
               SizedBox(width: 10),
               Text(
                 label,
-                style: TextStyle(color: Colors.black),
               ),
             ],
           ),
