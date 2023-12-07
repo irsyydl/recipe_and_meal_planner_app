@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animated_introduction: ^1.0.4
   cloud_firestore: ^4.13.0
   cupertino_icons: ^1.0.2
   firebase_auth: ^4.13.0
@@ -40,9 +41,15 @@ dependencies:
   provider: ^6.1.1
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
+
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/dishdash-high-resolution-logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
