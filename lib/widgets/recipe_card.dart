@@ -14,7 +14,7 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -25,11 +25,11 @@ class RecipeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(recipe.title, style: TextStyle(fontSize: 16)),
+                    padding: const EdgeInsets.all(8),
+                    child: Text(recipe.title, style: const TextStyle(fontSize: 16)),
                   ),
                   IconButton(
-                    icon: Icon(Icons.event),
+                    icon: const Icon(Icons.event),
                     onPressed: () {
                       _showDatePicker(context, recipe);
                     },
@@ -48,7 +48,7 @@ class RecipeCard extends StatelessWidget {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
 
     if (selectedDate != null) {

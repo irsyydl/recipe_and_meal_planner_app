@@ -13,7 +13,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shopping List'),
+        title: const Text('Shopping List'),
       ),
       body: FutureBuilder<List<Map<String, String>>>(
         future: _shoppingListService.getShoppingList(),
@@ -29,7 +29,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         return ListTile(
           title: Text(ingredient),
           trailing: IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () async {
               await _shoppingListService.removeIngredientFromShoppingList(recipeId, ingredient);
               setState(() {});

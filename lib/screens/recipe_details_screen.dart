@@ -35,24 +35,24 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
-              Text('Description:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text('Description:',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Text(widget.recipe.description),
-              Text('Ingredients:',
+              const Text('Ingredients:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               for (var ingredient in widget.recipe.ingredients)
                 Text(ingredient),
-              Text('Instructions:',
+              const Text('Instructions:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               for (var instruction in widget.recipe.instructions)
                 Text(instruction),
               TextField(
                 controller: _commentController,
-                decoration: InputDecoration(labelText: 'Add a comment'),
+                decoration: const InputDecoration(labelText: 'Add a comment'),
               ),
               ElevatedButton(
                 onPressed: _submitComment,
-                child: Text('Submit Comment'),
+                child: const Text('Submit Comment'),
               ),
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -63,7 +63,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }
 
                   return Column(
@@ -77,13 +77,13 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                             .get(),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           }
 
                           final userDoc = snapshot.data;
 
                           if (userDoc == null || !userDoc.exists) {
-                            return Text('User not found');
+                            return const Text('User not found');
                           }
 
                           return ListTile(

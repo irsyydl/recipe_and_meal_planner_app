@@ -15,13 +15,13 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meal Planner'),
+        title: const Text('Meal Planner'),
       ),
       body: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
         future: _mealPlannerService.getMealPlanner(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
                 child: Text('Error fetching meal planner: ${snapshot.error}'));
@@ -38,7 +38,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                 return ExpansionTile(
                   title: Text(
                     date,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -50,9 +50,9 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                       builder: (context, titleSnapshot) {
                         if (titleSnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return const CircularProgressIndicator();
                         } else if (titleSnapshot.hasError) {
-                          return Text('Error fetching recipe title');
+                          return const Text('Error fetching recipe title');
                         } else {
                           return GestureDetector(
                             child: ListTile(

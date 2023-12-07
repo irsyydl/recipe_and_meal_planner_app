@@ -16,32 +16,32 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile');
               },
             ),
             ListTile(
-              leading: Icon(Icons.shopping_cart),
-              title: Text('Shopping List'),
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('Shopping List'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/shoppingList');
               },
             ),
             ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text('Meal Planner'),
+              leading: const Icon(Icons.calendar_today),
+              title: const Text('Meal Planner'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/mealPlanner');
               },
             ),
             ListTile(
-              leading: Icon(Icons.upload),
-              title: Text('Upload Recipe'),
+              leading: const Icon(Icons.upload),
+              title: const Text('Upload Recipe'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/uploadRecipe');

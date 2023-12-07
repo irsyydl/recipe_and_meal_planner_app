@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Scaffold(
           body: Column(children: [
             AppBar(
-              title: Text("Profile"),
+              title: const Text("Profile"),
               backgroundColor: Colors.transparent,
             ),
             Center(
@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           AsyncSnapshot<DocumentSnapshot> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return const CircularProgressIndicator();
                         } else {
                           if (snapshot.hasError)
                             return Text('Error: ${snapshot.error}');
@@ -63,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     StreamBuilder<DocumentSnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('users')
@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           AsyncSnapshot<DocumentSnapshot> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return const CircularProgressIndicator();
                         } else {
                           if (snapshot.hasError)
                             return Text('Error: ${snapshot.error}');
@@ -85,14 +85,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 Text(
                                   "Username: $username",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "Email: $userEmail",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
@@ -102,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildProfileButton(context, "Change Username", Icons.edit),
                     _buildProfileButton(
                         context, "Change Profile Picture", Icons.camera_alt),
@@ -139,14 +139,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             border: Border.all(color: Colors.transparent),
             borderRadius: BorderRadius.circular(10),
           ),
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Icon(
                 icon,
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Text(
                 label,
               ),
