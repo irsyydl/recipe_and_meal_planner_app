@@ -16,9 +16,23 @@ class _RecipeUploadScreenState extends State<RecipeUploadScreen> {
   final RecipeService _recipeService = RecipeService();
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  TextEditingController ingredientsController = TextEditingController();
-  TextEditingController instructionsController = TextEditingController();
+  List<TextEditingController> ingredientControllers = [TextEditingController()];
+  List<TextEditingController> instructionControllers = [
+    TextEditingController()
+  ];
   File? _image;
+
+  void addIngredientField() {
+    setState(() {
+      ingredientControllers.add(TextEditingController());
+    });
+  }
+
+  void addInstructionField() {
+    setState(() {
+      instructionControllers.add(TextEditingController());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +60,10 @@ class _RecipeUploadScreenState extends State<RecipeUploadScreen> {
                       : Icon(Icons.add_a_photo, color: Colors.grey[800]),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -57,10 +71,10 @@ class _RecipeUploadScreenState extends State<RecipeUploadScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: descriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Description',
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -68,42 +82,96 @@ class _RecipeUploadScreenState extends State<RecipeUploadScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: ingredientsController,
-                decoration: InputDecoration(
-                  labelText: 'Ingredients',
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
-                  ),
+              const SizedBox(height: 10),
+              for (int i = 0; i < ingredientControllers.length; i++)
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: ingredientControllers[i],
+                            decoration: const InputDecoration(
+                              labelText: 'Ingredient',
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 2.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (i != 0)
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                ingredientControllers.removeAt(i);
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
+              ElevatedButton(
+                onPressed: addIngredientField,
+                child: Text('Add new ingredient'),
               ),
               SizedBox(height: 10),
-              TextFormField(
-                controller: instructionsController,
-                decoration: InputDecoration(
-                  labelText: 'Instructions',
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
-                  ),
+              for (int i = 0; i < instructionControllers.length; i++)
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: instructionControllers[i],
+                            decoration: const InputDecoration(
+                              labelText: 'Instruction',
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 2.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (i != 0)
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                instructionControllers.removeAt(i);
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
+              ElevatedButton(
+                onPressed: addInstructionField,
+                child: Text('Add new instruction'),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
                   String title = titleController.text;
                   String description = descriptionController.text;
-                  List<String> ingredients =
-                      ingredientsController.text.split(',');
-                  List<String> instructions =
-                      instructionsController.text.split(',');
+                  List<String> ingredients = ingredientControllers
+                      .map((controller) => controller.text)
+                      .toList();
+                  List<String> instructions = instructionControllers
+                      .map((controller) => controller.text)
+                      .toList();
 
                   if (title.isEmpty ||
                       description.isEmpty ||
-                      ingredientsController.text.isEmpty ||
-                      instructionsController.text.isEmpty) {
+                      ingredients.any((ingredient) => ingredient.isEmpty) ||
+                      instructions.any((instruction) => instruction.isEmpty)) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text(
                             'Please fill all the fields before uploading the recipe.')));
@@ -117,7 +185,7 @@ class _RecipeUploadScreenState extends State<RecipeUploadScreen> {
                     instructions,
                   );
                 },
-                child: Text('Upload Recipe'),
+                child: const Text('Upload Recipe'),
               ),
             ],
           ),
