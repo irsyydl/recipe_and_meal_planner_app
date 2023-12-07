@@ -11,7 +11,7 @@ class AppDrawer extends StatelessWidget {
           children: <Widget>[
             DrawerHeader(
               child: Image.asset(
-                'assets/dishdash-high-resolution-logo.png',
+                'assets/dishdash-high-resolution-logo-transparent.png',
                 fit: BoxFit.contain,
               ),
             ),
